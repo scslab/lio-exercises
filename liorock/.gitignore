@@ -1,0 +1,6 @@
+*.hi
+*.o
+*~
+/.cabal-sandbox
+/liorock
+cabal.sandbox.config
