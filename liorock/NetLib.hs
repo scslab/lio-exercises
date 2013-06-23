@@ -26,40 +26,40 @@ type Handle = LObj DCLabel IO.Handle
 
 hPutStrLnP :: PrivDesc l p =>
    Priv p -> LObj l IO.Handle -> String -> LIO l ()
-hPutStrLnP p = blessPTCB IO.hPutStrLn p
+hPutStrLnP p = blessPTCB "hPutStrLnP" IO.hPutStrLn p
 
 logP :: DCPriv -> String -> DC ()
-logP p = hPutStrLnP p (LObjTCB dcPub IO.stdout)
+logP p = hPutStrLnP p (LObjTCB dcPublic IO.stdout)
 
 hPutStrLn :: Label l => LObj l IO.Handle -> String -> LIO l ()
-hPutStrLn h = blessTCB IO.hPutStrLn h
+hPutStrLn h = blessTCB "hPutStrLn" IO.hPutStrLn h
 
 hGetLine :: Label l => LObj l IO.Handle -> LIO l String
-hGetLine h = blessTCB IO.hGetLine h
+hGetLine h = blessTCB "hGetLine" IO.hGetLine h
 
 hSetBufferingP :: PrivDesc l p =>
                   Priv p -> LObj l IO.Handle -> IO.BufferMode -> LIO l ()
-hSetBufferingP p = blessPTCB IO.hSetBuffering p
+hSetBufferingP p = blessPTCB "hSetBufferingP" IO.hSetBuffering p
 
 hCloseP :: PrivDesc l p => Priv p -> LObj l IO.Handle -> LIO l ()
-hCloseP p = blessPTCB IO.hClose p
+hCloseP p = blessPTCB "hCloseP" IO.hClose p
 
 
 type Socket = LObj DCLabel IO.Socket
 
 listenOn :: PortID -> DC (Socket, DCPriv)
 listenOn port = do
-  sock <- blessTCB IO.listenOn (LObjTCB dcPub port)
+  sock <- blessTCB "listenOn" IO.listenOn (LObjTCB dcPublic port)
   let net = principal $ "tcp://localhost:" ++ show port
       lbl = (net %% net)
-      priv = PrivTCB $ toComponent net
+      priv = PrivTCB $ toCNF net
   return (LObjTCB lbl sock, priv)
 
 acceptP :: DCPriv -> Socket -> DC (Handle, Principal)
 acceptP p s = do
-  (ioh, name, port) <- blessPTCB IO.accept p s
+  (ioh, name, port) <- blessPTCB "acceptP" IO.accept p s
   let net = principal $ "tcp://" ++ name ++ ":" ++ show port
-      label = dcLabel (privDesc p \/ net) (privDesc p \/ net)
+      label = privDesc p \/ net %% privDesc p \/ net
   guardAllocP p label
   let h = LObjTCB label ioh
   hSetBufferingP p h IO.LineBuffering
