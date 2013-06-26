@@ -10,15 +10,15 @@ import LIO.TCB.LObj
 type Handle = LObj DCLabel IO.Handle
 
 hPutStrLnP :: DCPriv -> Handle -> String -> LIO DCLabel ()
-hPutStrLnP = blessPTCB IO.hPutStrLn
+hPutStrLnP = blessPTCB "hPutStrLnP" IO.hPutStrLn
 
 hPutStrLn :: Handle -> String -> LIO DCLabel ()
-hPutStrLn = blessTCB IO.hPutStrLn
+hPutStrLn = blessTCB "hPutStrLn" IO.hPutStrLn
 
 stdout :: Handle
 stdout = LObjTCB (True %% True) IO.stdout
 
 myPriv :: DCPriv
-myPriv = PrivTCB $ toComponent True
+myPriv = PrivTCB $ toCNF True
 
 test = evalDC $ hPutStrLnP myPriv stdout "Hello world"
