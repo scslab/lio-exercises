@@ -21,7 +21,7 @@ main = withSocketsDo $ do
   evalDC $ do
     (sock, refereePriv) <- listenOn port
     logP refereePriv $ "Listening on " ++ show port
-    setClearance (dcLabel (privDesc refereePriv) dcTrue)
+    setClearance $ privDesc refereePriv %% True
     forever $ do
       (h1, p1) <- acceptP refereePriv sock
       (h2, p2) <- acceptP refereePriv sock
