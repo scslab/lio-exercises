@@ -27,11 +27,11 @@ main = withSocketsDo $ do
       (h1, p1) <- acceptP refereePriv sock
       (h2, p2) <- acceptP refereePriv sock
 
-      forkLIO $ (runGame refereePriv h1
+      forkLIO $ (runGame h1
                   `finally` hCloseP refereePriv h1)
                   `catch` (printErr refereePriv)
 
-      forkLIO $ (runGame refereePriv h2
+      forkLIO $ (runGame h2
                   `finally` hCloseP refereePriv h2)
                   `catch` (printErr refereePriv)
 
